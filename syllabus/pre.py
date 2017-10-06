@@ -10,6 +10,23 @@ log = logging.getLogger(__name__)
 
 base = arrow.now()   # Default, replaced if file has 'begin: ...'
 
+def compare_date():
+    try:
+        today = arrow.now()
+        startTerm =  arrow.Arrow(2017, 9, 23)
+        thisWeek = None
+        weeks = []
+        while(len(weeks) < 10):
+            week = arrow.range('day', startTerm, startTerm.shift(days=7))
+            startTerm = startTerm.shift(days=7)
+            weeks.append(week)
+        for week in weeks :
+            if today.day() in range(week):
+                thisWeek = week
+
+        return weeks.index(thisWeek)
+    except:
+        return "(bad date)"
 
 def process(raw):
     """
@@ -52,6 +69,10 @@ def process(raw):
             entry['topic'] = ""
             entry['project'] = ""
             entry['week'] = content
+            if content == compare_date():
+                hlthis = content
+                log.info("This is the week: " + hlthis)
+
 
         elif field == 'topic' or field == 'project':
             entry[field] = content
