@@ -9,7 +9,7 @@
 
 PORTNUM=$1
 if [[ "${PORTNUM}" == "" ]]; then
-    PORTNUM="8000"
+    PORTNUM="9761"
 fi;
 
 echo "***Will listen on port ${PORTNUM}***"
