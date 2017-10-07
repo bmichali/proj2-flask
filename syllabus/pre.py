@@ -28,7 +28,6 @@ def compare_date():
             for day in week:
                 if today.month == day.month:
                     if today.day == day.day:
-                        print(count)
                         return count
         else:
             return "Not in the term"
