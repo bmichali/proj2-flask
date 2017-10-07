@@ -4,6 +4,7 @@ Pre-process a syllabus (class schedule) file.
 """
 import arrow   # Dates and times
 import logging
+import flask
 logging.basicConfig(format='%(levelname)s:%(message)s',
                     level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -13,18 +14,24 @@ base = arrow.now()   # Default, replaced if file has 'begin: ...'
 def compare_date():
     try:
         today = arrow.now()
-        startTerm = arrow.Arrow(2017, 9, 23)
+        startTerm =  arrow.Arrow(2017, 9, 23)
         thisWeek = None
         weeks = []
         while(len(weeks) < 10):
-            week = arrow.range('day', startTerm, startTerm.shift(days=7))
-            startTerm = startTerm.shift(days=7)
-            weeks.append(week)
-        for week in weeks :
-            if today.day() in range(week):
-                thisWeek = week
+            week = arrow.Arrow.range('day', startTerm, startTerm.shift(days=7))
 
-        return weeks.index(thisWeek)
+            startTerm = startTerm.shift(weeks=+1)
+            weeks.append(week)
+        count = 0
+        for week in weeks:
+            count = count + 1
+            for day in week:
+                if today.month == day.month:
+                    if today.day == day.day:
+                        print(count)
+                        return count
+        else:
+            return "Not in the term"
     except:
         return "(bad date)"
 
@@ -69,9 +76,7 @@ def process(raw):
             entry['topic'] = ""
             entry['project'] = ""
             entry['week'] = content
-	    if content == compare_date():
-                hlthis = content
-                log.info("This is the week: "+hlthis)
+
 
         elif field == 'topic' or field == 'project':
             entry[field] = content
@@ -81,7 +86,6 @@ def process(raw):
 
     if entry:
         cooked.append(entry)
-
     return cooked
 
 

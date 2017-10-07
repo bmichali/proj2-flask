@@ -46,6 +46,7 @@ schedule = pre.process(open(configuration.SYLLABUS))
 def index():
     """Main application page; most users see only this"""
     app.logger.debug("Main page entry")
+    flask.g.current = pre.compare_date()
     flask.g.schedule = schedule  # To be accessible in Jinja2 on page
     return flask.render_template('syllabus.html')
 
@@ -96,6 +97,31 @@ def format_arrow_date(date):
         return normal.format("ddd MM/DD/YYYY")
     except:
         return "(bad date)"
+
+def compare_date():
+    try:
+        today = arrow.now()
+        startTerm =  arrow.Arrow(2017, 9, 23)
+        thisWeek = None
+        weeks = []
+        while(len(weeks) < 10):
+            week = arrow.Arrow.range('day', startTerm, startTerm.shift(days=7))
+
+            startTerm = startTerm.shift(weeks=+1)
+            weeks.append(week)
+        count = 0
+        for week in weeks:
+            count = count + 1
+            for day in week:
+                if today.month == day.month:
+                    if today.day == day.day:
+                        return str(count)
+        else:
+            return "Not in the term"
+    except:
+        return "(bad date)"
+
+
 
 
 #
